@@ -1,13 +1,8 @@
 services:
   indico:
-    build: ..
-    environment:
-      - PGHOST=postgres
-      - PGDATABASE=indico
-      - PGUSER=indico
-      - PGPASSWORD=secure#password
-      - SECRET_KEY=YzpIhl5kFVYruksvnHGONg
-      - BASE_URL=http://localhost:8080/
+    # build: ..
+    image: codeberg.org/0x2321/indico-docker:latest
+    env_file: .env
     volumes:
       - data:/data
       - web:/opt/indico/static
@@ -23,10 +18,10 @@ services:
 
   postgres:
     image: postgres:15-bookworm
-    environment:
-      - POSTGRES_DB=indico
-      - POSTGRES_USER=indico
-      - POSTGRES_PASSWORD=secure#password
+    entrypoint:
+      - POSTGRES_DB=${INDICO_POSTGRES_DB}
+      - POSTGRES_USER=${INDICO_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${INDICO_POSTGRES_PASSWORD}
     volumes:
       - postgres:/var/lib/postgresql/data
 

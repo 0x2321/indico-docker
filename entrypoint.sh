@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+export PGHOST="${INDICO_POSTGRES_HOST}"
+export PGDATABASE="${INDICO_POSTGRES_DB}"
+export PGUSER="${INDICO_POSTGRES_USER}"
+export PGPASSWORD="${INDICO_POSTGRES_PASSWORD}"
+
 export INDICO_CONFIG=/tmp/indico.conf
 cat /etc/indico.tmpl.conf /etc/indico.conf > /tmp/indico.conf
 
