@@ -1,0 +1,47 @@
+services:
+  indico:
+    build: ..
+    environment:
+      - PGHOST=postgres
+      - PGDATABASE=indico
+      - PGUSER=indico
+      - PGPASSWORD=secure#password
+      - SECRET_KEY=YzpIhl5kFVYruksvnHGONg
+      - BASE_URL=http://localhost:8080/
+    volumes:
+      - data:/data
+      - web:/opt/indico/static
+      - ./indico.conf:/etc/indico.conf:ro
+    depends_on:
+      - postgres
+      - redis
+
+  redis:
+    image: redis
+    volumes:
+      - redis:/data
+
+  postgres:
+    image: postgres:15-bookworm
+    environment:
+      - POSTGRES_DB=indico
+      - POSTGRES_USER=indico
+      - POSTGRES_PASSWORD=secure#password
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  caddy:
+    image: caddy:alpine
+    depends_on:
+      - indico
+    ports:
+      - 8080:80
+    volumes:
+      - web:/opt/indico/static
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+
+volumes:
+  data:
+  web:
+  redis:
+  postgres:

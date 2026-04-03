@@ -1,0 +1,20 @@
+:80 {
+    root /opt/indico/static
+
+    @versioned path_regexp static ^/(images|fonts)(.*)/(.+?)(__v[0-9a-f]+)?\.([^.]+)$
+    rewrite @versioned /{re.static.1}{re.static.2}/{re.static.3}.{re.static.5}
+
+    @static {
+        path /css/*
+        path /dist/*
+        path /images/*
+        path /fonts/*
+    }
+
+    handle @static {
+        file_server
+    }
+    handle {
+       reverse_proxy indico:8080
+    }
+}
