@@ -1,5 +1,7 @@
 # 🚀 indico-docker
 
+[![Codeberg](https://img.shields.io/badge/Main_Repo-Codeberg-blue?logo=codeberg)](https://codeberg.org/0x2321/indico-docker)
+
 A production-ready containerized version of [Indico](https://getindico.io), the open-source event management system.
 
 ## 📦 Images
