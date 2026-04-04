@@ -23,7 +23,8 @@ export PGPASSWORD="${INDICO_POSTGRES_PASSWORD}"
 # (containing container-specific defaults) with the user-provided /etc/indico.conf
 # to allow for flexible runtime configuration while maintaining core defaults.
 export INDICO_CONFIG=/tmp/indico.conf
-cat /etc/indico.tmpl.conf /etc/indico.conf > /tmp/indico.conf
+cp /etc/indico.tmpl.conf /tmp/indico.conf
+[[ -f /etc/indico.conf ]] && cat /etc/indico.conf >> /tmp/indico.conf
 
 # Prefix standard output with a custom label to distinguish between multiple services
 # running within the same container logs.
