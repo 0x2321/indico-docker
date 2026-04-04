@@ -30,11 +30,15 @@ The container is configured using environment variables. These are used to **aut
 | `INDICO_POSTGRES_DB`       | Name of the PostgreSQL database.      | `indico`          |
 
 ### App
-| Variable            | Description                        | Example                       |
-|:--------------------|:-----------------------------------|:------------------------------|
-| `INDICO_SECRET_KEY` | Secret key for Indico sessions.    | `openssl rand -hex 32`        |
-| `INDICO_BASE_URL`   | Public URL of the Indico instance. | `https://indico.example.com/` |
-| `INDICO_STORAGE_DIR`| Internal storage path (optional).  | `/data` (Default)             |
+| Variable                 | Description                        | Example                       |
+|:-------------------------|:-----------------------------------|:------------------------------|
+| `INDICO_SECRET_KEY`      | Secret key for Indico sessions.    | `openssl rand -hex 32`        |
+| `INDICO_BASE_URL`        | Public URL of the Indico instance. | `https://indico.example.com/` |
+| `INDICO_REDIS_CACHE_URL` | Redis connection URL for caching.  | `redis://redis:6379/0`        |
+| `INDICO_CELERY_BROKER`   | Redis connection URL for Celery.   | `redis://redis:6379/1`        |
+| `INDICO_NO_REPLY_EMAIL`  | No-reply email address.            | `noreply@example.invalid`     |
+| `INDICO_SUPPORT_EMAIL`   | Support email address.             | `suppport@example.invalid`    |
+| `INDICO_STORAGE_DIR`     | Internal storage path (optional).  | `/data` (Default)             |
 
 ## 🛠️ Advanced Configuration
 
