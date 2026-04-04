@@ -18,7 +18,7 @@ services:
 
   postgres:
     image: postgres:15-bookworm
-    entrypoint:
+    environment:
       - POSTGRES_DB=${INDICO_POSTGRES_DB}
       - POSTGRES_USER=${INDICO_POSTGRES_USER}
       - POSTGRES_PASSWORD=${INDICO_POSTGRES_PASSWORD}
