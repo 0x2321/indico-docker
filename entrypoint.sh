@@ -2,13 +2,45 @@
 # entrypoint.sh - Orchestration script for the Indico application.
 #
 # This script prepares the Indico environment by:
-# 1. Mapping environment variables to technical standards.
-# 2. Merging configuration templates with user-provided overrides.
-# 3. Waiting for the PostgreSQL database to become available.
-# 4. Performing database initialization and migrations.
-# 5. Starting background services (Celery and uWSGI) and monitoring them.
+# 1. Validating that all required environment variables are set.
+# 2. Mapping environment variables to technical standards.
+# 3. Merging configuration templates with user-provided overrides.
+# 4. Waiting for the PostgreSQL database to become available.
+# 5. Performing database initialization and migrations.
+# 6. Starting background services (Celery and uWSGI) and monitoring them.
 
 set -e
+
+# --- Environment Check ---
+# Verify that all mandatory environment variables are set before proceeding.
+# This prevents runtime errors related to missing configuration.
+required_vars=(
+  INDICO_POSTGRES_HOST
+  INDICO_POSTGRES_DB
+  INDICO_POSTGRES_USER
+  INDICO_POSTGRES_PASSWORD
+  INDICO_REDIS_CACHE_URL
+  INDICO_CELERY_BROKER
+  INDICO_SECRET_KEY
+  INDICO_BASE_URL
+  INDICO_NO_REPLY_EMAIL
+  INDICO_SUPPORT_EMAIL
+)
+
+missing_vars=()
+for var in "${required_vars[@]}"; do
+  if [[ -z "${!var}" ]]; then
+    missing_vars+=("$var")
+  fi
+done
+
+if [[ ${#missing_vars[@]} -gt 0 ]]; then
+  echo "[ERROR] The following mandatory environment variables are not set:"
+  for var in "${missing_vars[@]}"; do
+    echo "  - $var"
+  done
+  exit 1
+fi
 
 # --- Environment Mapping ---
 # Map INDICO_ variables to standard PostgreSQL environment variables (PGHOST, etc.).
