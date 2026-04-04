@@ -25,10 +25,6 @@ export PGPASSWORD="${INDICO_POSTGRES_PASSWORD}"
 export INDICO_CONFIG=/tmp/indico.conf
 cat /etc/indico.tmpl.conf /etc/indico.conf > /tmp/indico.conf
 
-if [ $# -gt 0 ]; then
-    exec indico "$@"
-fi
-
 # Prefix standard output with a custom label to distinguish between multiple services
 # running within the same container logs.
 prefix_output() {
