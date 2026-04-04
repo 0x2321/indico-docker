@@ -1,11 +1,27 @@
 #!/bin/bash
+# entrypoint.sh - Orchestration script for the Indico application.
+#
+# This script prepares the Indico environment by:
+# 1. Mapping environment variables to technical standards.
+# 2. Merging configuration templates with user-provided overrides.
+# 3. Waiting for the PostgreSQL database to become available.
+# 4. Performing database initialization and migrations.
+# 5. Starting background services (Celery and uWSGI) and monitoring them.
+
 set -e
 
+# --- Environment Mapping ---
+# Map INDICO_ variables to standard PostgreSQL environment variables (PGHOST, etc.).
+# This allows standard tools like `psql` to authenticate without explicit command-line arguments.
 export PGHOST="${INDICO_POSTGRES_HOST}"
 export PGDATABASE="${INDICO_POSTGRES_DB}"
 export PGUSER="${INDICO_POSTGRES_USER}"
 export PGPASSWORD="${INDICO_POSTGRES_PASSWORD}"
 
+# --- Configuration Merging ---
+# Indico expects a single configuration file. We combine a generated template
+# (containing container-specific defaults) with the user-provided /etc/indico.conf
+# to allow for flexible runtime configuration while maintaining core defaults.
 export INDICO_CONFIG=/tmp/indico.conf
 cat /etc/indico.tmpl.conf /etc/indico.conf > /tmp/indico.conf
 
@@ -13,24 +29,29 @@ if [ $# -gt 0 ]; then
     exec indico "$@"
 fi
 
-# Prefix standard output with a custom label
+# Prefix standard output with a custom label to distinguish between multiple services
+# running within the same container logs.
 prefix_output() {
   local prefix="$1"
   sed --unbuffered "s/^/[$prefix] /"
 }
 
-# Logger for the entrypoint itself
+# Logger for the entrypoint itself for uniform status reporting.
 log() {
   echo "[ENTRY] $1"
 }
 
-# Wait for database connection
+# --- Database Wait Loop ---
+# PostgreSQL may take longer to start than the application container.
+# We poll the database using `psql` to ensure connectivity before attempting migrations.
 until psql -c '\q' > /dev/null 2>&1; do
   log "Waiting for database connection..."
   sleep 2
 done
 
-# Initialize database if needed
+# --- Initialization & Migrations ---
+# Check if the 'events' schema exists to determine if the database is already initialized.
+# If not, we install required extensions and run 'db prepare' to set up the schema.
 if ! psql -c 'SELECT count(*) FROM events.events LIMIT 1' > /dev/null 2>&1; then
     log "Preparing database..."
     psql -c 'CREATE EXTENSION IF NOT EXISTS unaccent;' > /dev/null 2>&1
@@ -40,13 +61,14 @@ if ! psql -c 'SELECT count(*) FROM events.events LIMIT 1' > /dev/null 2>&1; then
     indico db prepare
 fi
 
+# Automatically apply any pending migrations for the core application and all plugins.
 log "Executing database upgrades..."
 indico db upgrade > /dev/null
 
 log "Executing plugin database migrations..."
 indico db --all-plugins upgrade
 
-# Signal-Handling: Beendet alle Hintergrundprozesse bei SIGTERM
+# --- Signal-Handling ---
 terminate() {
   log "Terminating background processes..."
   kill $(jobs -p)
@@ -54,14 +76,19 @@ terminate() {
 }
 trap terminate SIGTERM SIGINT
 
-# Start services in the background
+# --- Service Management ---
+# Both Celery (for background tasks) and uWSGI (the web server) are started
+# in the background. Standard output and error are piped through `prefix_output`
+# to ensure logs are clearly attributed to each service.
 log "Starting Indico celery worker..."
 indico celery worker -B 2>&1 | prefix_output "CELERY" &
 
 log "Starting Indico uWSGI..."
 uwsgi --ini /etc/uwsgi-indico.ini 2>&1 | prefix_output "UWSGI" &
 
-# Wait for background services
+# `wait -n` monitors all background jobs and returns as soon as ANY process exits.
+# This ensures that if either Celery or uWSGI fails, the container itself exits
+# with the error code, allowing the orchestrator (e.g., Docker Compose/K8s) to restart it.
 wait -n
 
 exit $?
