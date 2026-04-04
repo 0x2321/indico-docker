@@ -1,6 +1,14 @@
 name: Build and push container
+enable-email-notifications: true
+
 on:
   push:
+    paths:
+      - 'Dockerfile'
+      - 'entrypoint.sh'
+      - 'config/**'
+  schedule:
+    - cron: '0 1 1 * *'
 
 jobs:
   build:
