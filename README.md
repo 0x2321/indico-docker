@@ -1,4 +1,4 @@
-# 🚀 indico-docker
+# 🐳 indico-docker
 
 [![Codeberg](https://img.shields.io/badge/Main_Repo-Codeberg-blue?logo=codeberg)](https://codeberg.org/0x2321/indico-docker)
 
@@ -13,16 +13,13 @@ The following images are available and hosted on Codeberg:
 | `codeberg.org/0x2321/indico-docker:latest`       | **Standard** Indico installation.                          |
 | `codeberg.org/0x2321/indico-docker:latest-latex` | Indico installation with **PDF support** (includes XeTeX). |
 
-## 🚀 Quickstart
+## 🛠️ Quickstart
 
-For a complete, functional setup, please refer to the [**/example**](./example) folder. It includes:
-- `compose.yaml`: Full orchestration of Indico, PostgreSQL, Redis, and Caddy.
-- `Caddyfile`: Reverse proxy configuration for SSL and static file serving.
-- `indico.conf`: Additional Indico configuration overrides.
+The fastest way to get a production-ready Indico instance running is using our pre-configured [**example stack**](./example). It includes a database, redis, and a reverse proxy with SSL support.
 
 ## ⚙️ Configuration
 
-The container is configured using environment variables. Below are the required variables to get started:
+The container is configured using environment variables. These are used to **automatically generate** the core configuration during startup.
 
 ### Database
 | Variable                   | Description                           | Example           |
@@ -35,5 +32,21 @@ The container is configured using environment variables. Below are the required 
 ### App
 | Variable            | Description                        | Example                       |
 |:--------------------|:-----------------------------------|:------------------------------|
-| `INDICO_SECRET_KEY` | Secret key for Indico sessions.    | `random-string`               |
+| `INDICO_SECRET_KEY` | Secret key for Indico sessions.    | `openssl rand -hex 32`        |
 | `INDICO_BASE_URL`   | Public URL of the Indico instance. | `https://indico.example.com/` |
+| `INDICO_STORAGE_DIR`| Internal storage path (optional).  | `/data` (Default)             |
+
+## 🛠️ Advanced Configuration
+
+Indico's configuration in this container is split into two parts:
+
+1.  **Core Configuration (Automatic)**:
+    Basic settings (Database, Secret Key, Base URL, Storage) are automatically generated from the environment variables above.
+
+2.  **Custom Overrides (`indico.conf`)**:
+    If you need to configure **additional** settings (like SMTP, LDAP, or Plugins), you can mount a custom configuration file to `/etc/indico.conf`. Settings in this file will take precedence over the automatically generated defaults.
+
+## 💾 Persistence
+
+To ensure your data survives container restarts, make sure to mount a persistent volume to:
+- `/data`: This directory stores all uploaded files, attachments, and images.
