@@ -7,6 +7,7 @@ services:
       - data:/data
       - web:/opt/indico/static
       - ./indico.conf:/etc/indico.conf:ro
+     # - latex:/opt/indico/texmf # only needed for latex support
     depends_on:
       - postgres
       - redis
@@ -37,6 +38,7 @@ services:
 
 volumes:
   data:
+  # latex:
   web:
   redis:
   postgres:
