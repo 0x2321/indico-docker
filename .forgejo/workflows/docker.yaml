@@ -1,5 +1,5 @@
 name: Build and push container
-enable-email-notifications: true
+enable-email-notifications: false
 
 on:
   push:
@@ -18,10 +18,10 @@ jobs:
     strategy:
       matrix:
         info:
-          - tag: latest
+          - tag: 3
             version: ">=3.3,<3.4"
             latex: false
-          - tag: latest-latex
+          - tag: 3-latex
             version: ">=3.3,<3.4"
             latex: true
     steps:
