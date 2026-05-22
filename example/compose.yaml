@@ -1,7 +1,7 @@
 services:
   indico:
     # build: ..
-    image: codeberg.org/0x2321/indico-docker:3
+    image: codeberg.org/0x2321/indico-docker:3.3
     env_file: .env
     volumes:
       - data:/data

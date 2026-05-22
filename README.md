@@ -8,10 +8,10 @@ A production-ready containerized version of [Indico](https://getindico.io), the 
 
 The following images are available and hosted on Codeberg:
 
-| Image                                       | Description                                                |
-|:--------------------------------------------|:-----------------------------------------------------------|
-| `codeberg.org/0x2321/indico-docker:3`       | **Standard** Indico installation.                          |
-| `codeberg.org/0x2321/indico-docker:3-latex` | Indico installation with **PDF support** (includes XeTeX). |
+| Image                                         | Description                                                |
+|:----------------------------------------------|:-----------------------------------------------------------|
+| `codeberg.org/0x2321/indico-docker:3.3`       | **Standard** Indico installation.                          |
+| `codeberg.org/0x2321/indico-docker:3.3-latex` | Indico installation with **PDF support** (includes XeTeX). |
 
 ## 🛠️ Quickstart
 
