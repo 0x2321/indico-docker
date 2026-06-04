@@ -58,6 +58,7 @@ ARG INDICO_VERSION=">=3.3,<3.4"
 RUN pip install setuptools wheel
 RUN pip install uwsgi
 RUN pip install "indico${INDICO_VERSION}" indico-plugins
+RUN pip install python3-saml
 RUN indico setup create-symlinks /opt/indico
 
 FROM scratch
