@@ -16,6 +16,7 @@ RUN dnf install -y --installroot /build \
     glib2 \
     pango \
     openssl-libs \
+    xmlsec1 \
     --setopt=install_weak_deps=False --nodocs --releasever=9
 
 # install latex
