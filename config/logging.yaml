@@ -2,47 +2,23 @@ version: 1
 
 root:
   level: INFO
-  handlers: [other]
+  handlers: [console]
 
 loggers:
   indico:
-    handlers: [indico, email]
+    handlers: [console]
   celery:
-    handlers: [celery, email, stderr]
+    handlers: [console]
 
 handlers:
-  indico:
-    class: logging.FileHandler
-    filename: indico.log
-    filters: [indico]
-    formatter: default
-  celery:
-    class: logging.FileHandler
-    filename: celery.log
-    filters: [celery]
-    formatter: simple
-  other:
-    class: logging.FileHandler
-    filename: other.log
-    filters: [other]
-    formatter: simple
-    level: WARNING
-  stderr:
+  console:
     class: logging.StreamHandler
     formatter: default
-  email:
-    class: indico.core.logger.FormattedSubjectSMTPHandler
-    formatter: email
-    level: ERROR
+    filters: [indico, celery, other]
 
 formatters:
   default:
     format: '%(asctime)s  %(levelname)-7s  %(request_id)s  %(user_id)-6s  %(name)-25s %(message)s'
-  simple:
-    format: '%(asctime)s  %(levelname)-7s  %(name)-25s %(message)s'
-  email:
-    append_request_info: true
-    format: "%(asctime)s  %(request_id)s  %(user_id)-6s  %(name)s - %(levelname)s %(filename)s:%(lineno)d -- %(message)s\n\n"
 
 filters:
   indico:
