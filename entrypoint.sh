@@ -57,6 +57,7 @@ export PGPASSWORD="${INDICO_POSTGRES_PASSWORD}"
 export INDICO_CONFIG=/tmp/indico.conf
 cp /etc/indico.tmpl.conf /tmp/indico.conf
 [[ -f /etc/indico.conf ]] && cat /etc/indico.conf >> /tmp/indico.conf
+echo "del read_file" >> /tmp/indico.conf # remove utility function
 
 # Prefix standard output with a custom label to distinguish between multiple services
 # running within the same container logs.
