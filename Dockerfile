@@ -1,8 +1,5 @@
 FROM rockylinux:9 AS system
 
-# install requirements
-RUN dnf install -y 'dnf-command(copr)'
-
 # install image base
 RUN dnf install -y --installroot /build \
     rocky-release \
@@ -29,9 +26,6 @@ RUN if [ "$INSTALL_XETEX" = "true" ]; then \
         --setopt=install_weak_deps=False --nodocs --releasever=9; \
     fi;
 
-# add caddy repo
-RUN dnf copr enable -y --installroot /build --releasever=9 @caddy/caddy
-
 # add shibboleth repo
 COPY <<EOF /build/etc/yum.repos.d/shibboleth.repo
 [shibboleth]
@@ -54,9 +48,12 @@ RUN if [ "$INSTALL_SHIBBOLETH" = "true" ]; then \
     fi;
 
 # install caddy
+ARG TARGETARCH
 RUN if [ "$INSTALL_SHIBBOLETH" = "false" ]; then \
-    dnf install -y --installroot /build caddy \
-        --setopt=install_weak_deps=False --nodocs --releasever=9; \
+    CADDY_VERSION=$(curl -fsSL https://api.github.com/repos/caddyserver/caddy/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p') && \
+    curl -fsSL "https://github.com/caddyserver/caddy/releases/download/v${CADDY_VERSION}/caddy_${CADDY_VERSION}_linux_${TARGETARCH}.tar.gz" -o /tmp/caddy.tar.gz && \
+    tar -xzf /tmp/caddy.tar.gz -C /tmp  && \
+    install -m 0755 /tmp/caddy /build/usr/bin/caddy; \
     fi;
 
 # dnf clean
