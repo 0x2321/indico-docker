@@ -57,7 +57,7 @@ export PGPASSWORD="${INDICO_POSTGRES_PASSWORD}"
 export INDICO_CONFIG=/tmp/indico.conf
 cp /etc/indico.tmpl.conf /tmp/indico.conf
 [[ -f /etc/indico.conf ]] && cat /etc/indico.conf >> /tmp/indico.conf
-echo "del read_file" >> /tmp/indico.conf # remove utility function
+echo -e '\ndel read_file' >> /tmp/indico.conf # remove utility function
 
 # Prefix standard output with a custom label to distinguish between multiple services
 # running within the same container logs.
@@ -115,6 +115,23 @@ indico celery worker -B 2>&1 | prefix_output "CELERY" &
 
 log "Starting Indico uWSGI..."
 uwsgi --ini /etc/uwsgi-indico.ini 2>&1 | prefix_output "UWSGI" &
+
+# --- caddy proxy ---
+if [ -f "/usr/bin/caddy" ]; then
+  log "Starting Caddy..."
+  /usr/bin/caddy run --config /etc/caddy/Caddyfile 2>&1 | prefix_output "CADDY" &
+fi
+
+# --- shibboleth with apache proxy ---
+if [ -f "/usr/sbin/shibd" ]; then
+  log "Starting Shibboleth..."
+  /usr/sbin/shibd -F -f 2>&1 | prefix_output "SHIBBOLETH" &
+fi
+
+if [ -f "/usr/sbin/httpd" ]; then
+  log "Starting httpd..."
+  /usr/sbin/httpd -DFOREGROUND 2>&1 | prefix_output "HTTPD" &
+fi
 
 # `wait -n` monitors all background jobs and returns as soon as ANY process exits.
 # This ensures that if either Celery or uWSGI fails, the container itself exits

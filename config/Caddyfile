@@ -1,0 +1,17 @@
+{
+    admin off
+    persist_config off
+    auto_https off
+    log {
+        output stdout
+        format console
+        level INFO
+    }
+}
+
+:8080 {
+    @versioned path_regexp static ^/(images|fonts)(.*)/(.+?)(__v[0-9a-f]+)?\.([^.]+)$
+    rewrite @versioned /{re.static.1}{re.static.2}/{re.static.3}.{re.static.5}
+
+    reverse_proxy 127.0.0.1:4321
+}
