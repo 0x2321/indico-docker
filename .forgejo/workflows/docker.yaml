@@ -21,10 +21,16 @@ jobs:
         info:
           - tag: "3.3"
             version: ">=3.3,<3.4"
-            latex: false
+            feat_latex: false
+            feat_shibboleth: false
           - tag: "3.3-latex"
             version: ">=3.3,<3.4"
-            latex: true
+            feat_latex: true
+            feat_shibboleth: false
+          - tag: "3.3-shibboleth"
+            version: ">=3.3,<3.4"
+            feat_latex: false
+            feat_shibboleth: true
     steps:
       - name: Checkout the repo
         uses: actions/checkout@v4
@@ -49,6 +55,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             INDICO_VERSION=${{ matrix.info.version }}
-            INSTALL_XETEX=${{ matrix.info.latex }}
+            INSTALL_XETEX=${{ matrix.info.feat_latex }}
+            INSTALL_SHIBBOLETH=${{ matrix.info.feat_shibboleth }}
           tags: codeberg.org/${{ env.FORGEJO_REPOSITORY }}:${{ matrix.info.tag }}
           context: .
