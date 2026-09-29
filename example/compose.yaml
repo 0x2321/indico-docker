@@ -1,13 +1,15 @@
 services:
   indico:
-    # build: ..
+    #build: ..
     image: codeberg.org/0x2321/indico-docker:3.3
     env_file: .env
     volumes:
       - data:/data
-      - web:/opt/indico/static
       - ./indico.conf:/etc/indico.conf:ro
+     # - ./shibboleth2.xml:/etc/shibboleth/shibboleth2.xml:ro # only needed with shibboleth
      # - latex:/opt/indico/texmf # only needed for latex support
+    ports:
+      - 8080:8080
     depends_on:
       - postgres
       - redis
@@ -26,19 +28,8 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
-  caddy:
-    image: caddy:alpine
-    depends_on:
-      - indico
-    ports:
-      - 8080:80
-    volumes:
-      - web:/opt/indico/static
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-
 volumes:
   data:
   # latex:
-  web:
   redis:
   postgres:
