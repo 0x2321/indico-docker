@@ -6,7 +6,6 @@ services:
     volumes:
       - data:/data
       - ./indico.conf:/etc/indico.conf:ro
-     # - ./shibboleth2.xml:/etc/shibboleth/shibboleth2.xml:ro # only needed with shibboleth
      # - latex:/opt/indico/texmf # only needed for latex support
     ports:
       - 8080:8080
