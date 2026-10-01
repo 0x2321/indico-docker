@@ -60,8 +60,8 @@ RUN if [ "$INSTALL_SHIBBOLETH" = "false" ]; then \
 RUN dnf clean --installroot /build all
 
 # add indico user
-RUN chroot /build groupadd -g 1000 indico && \
-    chroot /build useradd -u 1000 -g indico -d /opt/indico -s /sbin/nologin indico
+RUN chroot /build groupadd -g 15000 indico && \
+    chroot /build useradd -u 15000 -g indico -d /opt/indico -s /sbin/nologin indico
 
 # create directories
 RUN chroot /build mkdir -p /data /var/log/indico /var/cache/indico /var/tmp/indico && \
